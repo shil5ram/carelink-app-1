@@ -426,3 +426,27 @@ For pull requests, editor preferences are available in the [editor config](.edit
 
 [Configuration repository]: https://github.com/spring-petclinic/spring-petclinic-microservices-config
 [Spring Boot Actuator Production Ready Metrics]: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html
+
+# CareLink – AWS Deployment Project
+
+This repository is being adapted for the CareLink cloud infrastructure
+engineering project.
+
+## Planned Cloud Architecture
+
+- AWS ECS Fargate for microservices hosting
+- Amazon ECR for Docker image storage
+- Terraform for infrastructure provisioning
+- GitHub Actions for CI/CD
+- AWS IAM and GitHub OIDC for secure deployment
+- Amazon CloudWatch for monitoring and logging
+
+## Application Services
+
+- Config Server
+- Discovery Server
+- API Gateway
+- Customers Service
+- Visits Service
+- Vets Service
+- Admin Server
