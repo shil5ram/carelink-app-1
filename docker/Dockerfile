@@ -1,31 +1,28 @@
-FROM openjdk:11-jre as builder
-WORKDIR application
+FROM eclipse-temurin:11-jre AS builder
+
+WORKDIR /application
+
 ARG ARTIFACT_NAME
 COPY ${ARTIFACT_NAME}.jar application.jar
+
 RUN java -Djarmode=layertools -jar application.jar extract
 
-# Download dockerize and cache that layer
-ARG DOCKERIZE_VERSION
-RUN wget -O dockerize.tar.gz https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
-RUN tar xzf dockerize.tar.gz
-RUN chmod +x dockerize
 
+FROM eclipse-temurin:11-jre
 
-# wget is not installed on adoptopenjdk:11-jre-hotspot
-FROM adoptopenjdk:11-jre-hotspot
+WORKDIR /application
 
-WORKDIR application
-
-# Dockerize
-COPY --from=builder application/dockerize ./
+# Include Dockerize in the final image
+COPY --from=jwilder/dockerize@sha256:f94fb59fb4f6e4ddf468aab69a1b25813ef395569d41aee2c4b9e18cf12fba36 /bin/dockerize /usr/local/bin/dockerize
 
 ARG EXPOSED_PORT
 EXPOSE ${EXPOSED_PORT}
 
-ENV SPRING_PROFILES_ACTIVE docker
+ENV SPRING_PROFILES_ACTIVE=docker
 
-COPY --from=builder application/dependencies/ ./
-COPY --from=builder application/spring-boot-loader/ ./
-COPY --from=builder application/snapshot-dependencies/ ./
-COPY --from=builder application/application/ ./
+COPY --from=builder /application/dependencies/ ./
+COPY --from=builder /application/spring-boot-loader/ ./
+COPY --from=builder /application/snapshot-dependencies/ ./
+COPY --from=builder /application/application/ ./
+
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]

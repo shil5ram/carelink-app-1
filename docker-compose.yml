@@ -1,66 +1,73 @@
-version: '2'
 
 services:
   config-server:
-    image: springcommunity/spring-petclinic-cloud--config-server
+    image: carelink-config-server:local
     container_name: config-server
     mem_limit: 512M
     ports:
      - 8888:8888
 
   discovery-server:
-    image: springcommunity/spring-petclinic-cloud-discovery-server
+    image: carelink-discovery-server:local
     container_name: discovery-server
     mem_limit: 512M
     depends_on:
-      - config-server
-    entrypoint: ["./dockerize","-wait=tcp://config-server:8888","-timeout=60s","--","java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseContainerSupport", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+     - config-server
+    entrypoint: ["/usr/local/bin/dockerize", "-wait=tcp://config-server:8888", "-timeout=60s", "--", "java", "org.springframework.boot.loader.JarLauncher"]
     ports:
      - 8761:8761
 
   customers-service:
-    image: springcommunity/spring-petclinic-cloud-customers-service
+    image: carelink-customers-service:local
     container_name: customers-service
+    environment:
+      MANAGEMENT_METRICS_EXPORT_WAVEFRONT_ENABLED: "false"
     mem_limit: 512M
     depends_on:
      - config-server
      - discovery-server
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseContainerSupport", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    entrypoint:  ["/usr/local/bin/dockerize", "-wait=tcp://discovery-server:8761", "-timeout=60s", "--", "java", "org.springframework.boot.loader.JarLauncher"]
     ports:
     - 8081:8081
 
   visits-service:
-    image: springcommunity/spring-petclinic-cloud-visits-service
+    image: carelink-visits-service:local
     container_name: visits-service
+    environment:
+      MANAGEMENT_METRICS_EXPORT_WAVEFRONT_ENABLED: "false"
     mem_limit: 512M
     depends_on:
      - config-server
      - discovery-server
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseContainerSupport", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    entrypoint:  ["/usr/local/bin/dockerize", "-wait=tcp://discovery-server:8761", "-timeout=60s", "--", "java", "org.springframework.boot.loader.JarLauncher"]
     ports:
      - 8082:8082
 
   vets-service:
-    image: springcommunity/spring-petclinic-cloud-vets-service
+    image: carelink-vets-service:local
     container_name: vets-service
+    environment:
+      MANAGEMENT_METRICS_EXPORT_WAVEFRONT_ENABLED: "false"
     mem_limit: 512M
     depends_on:
      - config-server
      - discovery-server
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseContainerSupport", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    entrypoint:  ["/usr/local/bin/dockerize", "-wait=tcp://discovery-server:8761", "-timeout=60s", "--", "java", "org.springframework.boot.loader.JarLauncher"]
     ports:
      - 8083:8083
 
   api-gateway:
-    image: springcommunity/spring-petclinic-cloud-api-gateway
+    image: carelink-api-gateway:local
     container_name: api-gateway
     mem_limit: 512M
     depends_on:
      - config-server
      - discovery-server
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseContainerSupport", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    entrypoint:  ["/usr/local/bin/dockerize", "-wait=tcp://discovery-server:8761", "-timeout=60s", "--", "java", "org.springframework.boot.loader.JarLauncher"]
     ports:
      - 8080:8080
+    environment:
+      MANAGEMENT_METRICS_EXPORT_WAVEFRONT_ENABLED: "false"
 
   tracing-server:
     image: openzipkin/zipkin
@@ -72,13 +79,17 @@ services:
      - 9411:9411
 
   admin-server:
-    image: springcommunity/spring-petclinic-cloud-admin-server
+    image: carelink-admin-server:local
     container_name: admin-server
+    environment:
+      SPRING_APPLICATION_NAME: admin-server
+      SPRING_CONFIG_IMPORT: "optional:configserver:http://config-server:8888"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-server:8761/eureka/"
     mem_limit: 512M
     depends_on:
      - config-server
      - discovery-server
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseContainerSupport", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    entrypoint:  ["/usr/local/bin/dockerize", "-wait=tcp://discovery-server:8761", "-timeout=60s", "--", "java", "org.springframework.boot.loader.JarLauncher"]
     ports:
      - 9090:9090
 
