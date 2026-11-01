@@ -1,5 +1,4 @@
 name: Build and Push CareLink Images
-
 on:
   push:
     branches:
@@ -27,6 +26,19 @@ jobs:
 
       - name: Build all seven services
         run: ./mvnw -B package --file pom.xml
+      - name: Prepare Docker build contexts
+        run: |
+          for service in \
+            spring-petclinic-admin-server \
+            spring-petclinic-api-gateway \
+            spring-petclinic-config-server \
+            spring-petclinic-customers-service \
+            spring-petclinic-discovery-server \
+            spring-petclinic-vets-service \
+            spring-petclinic-visits-service
+          do
+            cp docker/Dockerfile "$service/target/Dockerfile"
+          done
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
