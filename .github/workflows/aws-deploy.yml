@@ -31,7 +31,7 @@ jobs:
       - name: Install Skaffold
         run: |
           curl -Lo skaffold \
-            https://storage.googleapis.com/skaffold/releases/v2.16.0/skaffold-linux-amd64
+            https://storage.googleapis.com/skaffold/releases/v2.25.0/skaffold-linux-amd64
           sudo install skaffold /usr/local/bin/skaffold
           skaffold version
 
