@@ -18,6 +18,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v5
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build all seven services
+        run: ./mvnw -B package --file pom.xml
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -35,12 +44,6 @@ jobs:
           sudo install skaffold /usr/local/bin/skaffold
           skaffold version
 
-      - name: Install Pack CLI
-        run: |
-          curl -sSL https://github.com/buildpacks/pack/releases/download/v0.36.2/pack-v0.36.2-linux.tgz -o pack.tgz
-          tar -xzf pack.tgz
-          sudo install pack /usr/local/bin/pack
-          pack version
 
       - name: Build and push all seven images
         run: |

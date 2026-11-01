@@ -9,46 +9,62 @@ build:
     sha256: {}
   artifacts:
     - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-config-server
-      context: ./spring-petclinic-config-server
-      buildpacks:
-        builder: gcr.io/paketo-buildpacks/builder:base
-        trustBuilder: true
+      context: ./spring-petclinic-config-server/target
+      docker:
+        dockerfile: ../../docker/Dockerfile
+        buildArgs:
+          ARTIFACT_NAME: config-server
+          EXPOSED_PORT: "8888"
 
     - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-discovery-server
-      context: ./spring-petclinic-discovery-server
-      buildpacks:
-        builder: gcr.io/paketo-buildpacks/builder:base
-        trustBuilder: true
+      context: ./spring-petclinic-discovery-server/target
+      docker:
+        dockerfile: ../../docker/Dockerfile
+        buildArgs:
+          ARTIFACT_NAME: discovery-service
+          EXPOSED_PORT: "8761"
 
     - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-customers-service
-      context: ./spring-petclinic-customers-service
-      buildpacks:
-        builder: gcr.io/paketo-buildpacks/builder:base
-        trustBuilder: true
+      context: ./spring-petclinic-customers-service/target
+      docker:
+        dockerfile: ../../docker/Dockerfile
+        buildArgs:
+          ARTIFACT_NAME: customers-service
+          EXPOSED_PORT: "8080"
 
     - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-visits-service
-      context: ./spring-petclinic-visits-service
-      buildpacks:
-        builder: gcr.io/paketo-buildpacks/builder:base
-        trustBuilder: true
+      context: ./spring-petclinic-visits-service/target
+      docker:
+        dockerfile: ../../docker/Dockerfile
+        buildArgs:
+          ARTIFACT_NAME: visits-service
+          EXPOSED_PORT: "8080"
 
     - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-vets-service
-      context: ./spring-petclinic-vets-service
-      buildpacks:
-        builder: gcr.io/paketo-buildpacks/builder:base
-        trustBuilder: true
+      context: ./spring-petclinic-vets-service/target
+      docker:
+        dockerfile: ../../docker/Dockerfile
+        buildArgs:
+          ARTIFACT_NAME: vets-service
+          EXPOSED_PORT: "8080"
 
     - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-api-gateway
-      context: ./spring-petclinic-api-gateway
-      buildpacks:
-        builder: gcr.io/paketo-buildpacks/builder:base
-        trustBuilder: true
+      context: ./spring-petclinic-api-gateway/target
+      docker:
+        dockerfile: ../../docker/Dockerfile
+        buildArgs:
+          ARTIFACT_NAME: api-gateway
+          EXPOSED_PORT: "8080"
 
     - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-admin-server
-      context: ./spring-petclinic-admin-server
-      buildpacks:
-        builder: gcr.io/paketo-buildpacks/builder:base
-        trustBuilder: true
+      context: ./spring-petclinic-admin-server/target
+      docker:
+        dockerfile: ../../docker/Dockerfile
+        buildArgs:
+          ARTIFACT_NAME: admin-server
+          EXPOSED_PORT: "9090"
+
+
 
 deploy:
   statusCheckDeadlineSeconds: 240
