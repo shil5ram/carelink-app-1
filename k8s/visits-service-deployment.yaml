@@ -18,7 +18,7 @@ spec:
         app: visits-service
     spec:
       containers:
-      - image: ${REPOSITORY_PREFIX}/spring-petclinic-cloud-visits-service:latest
+      - image: 255945442255.dkr.ecr.us-east-1.amazonaws.com/carelink-staging-spring-petclinic-visits-service:latest
         name: visits-service
         imagePullPolicy: Always
         livenessProbe:
@@ -58,6 +58,5 @@ spec:
           value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878
         ports:
         - containerPort: 8080
-        resources: {}
       restartPolicy: Always
 status: {}

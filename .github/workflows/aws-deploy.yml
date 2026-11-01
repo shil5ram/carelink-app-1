@@ -1,0 +1,46 @@
+name: Build and Push CareLink Images
+
+on:
+  push:
+    branches:
+      - feature/aws-eks-deployment
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    name: Build and push seven services
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Install Skaffold
+        run: |
+          curl -Lo skaffold \
+            https://storage.googleapis.com/skaffold/releases/v2.16.0/skaffold-linux-amd64
+          sudo install skaffold /usr/local/bin/skaffold
+          skaffold version
+
+      - name: Install Pack CLI
+        uses: buildpacks/github-actions/setup-pack@v5
+
+      - name: Build and push all seven images
+        run: |
+          skaffold build \
+            --push=true \
+            --tag=latest \
+            --file-output=build-artifacts.json

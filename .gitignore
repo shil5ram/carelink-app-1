@@ -18,3 +18,9 @@ target/
 generated/
 .DS_Store
 .vscode/settings.json
+
+# Terraform local files and sensitive state
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
